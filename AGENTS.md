@@ -2,115 +2,151 @@
 
 # Find My Little Brother
 
-Offline child tracking application using the **official Google Nearby Connections API**.
+Offline Android child-tracking application built with Flutter and the official Google Nearby Connections API.
+
+---
+
+# Current Status
+
+## Milestone 1 - Discovery ✅
+
+Working:
+
+- Flutter ↔ Kotlin bridge (Pigeon)
+- EventChannel
+- Google Nearby Connections API
+- Advertising
+- Discovery
+- Device repository
+- Flutter receives nearby devices
+- Automatic Android device name (DeviceInfoService)
+
+Current result:
+
+Phone A
+
+Advertising
+
+↓
+
+Phone B
+
+Discovery
+
+↓
+
+Flutter UI receives
+
+device_found
+
+↓
+
+Nearby device appears in list
 
 ---
 
 # Current Milestone
 
-## Milestone 1
+Refactoring Android architecture before implementing connection.
 
-Discovery Complete ✅
+Discovery is working.
 
-Working:
-
-- Flutter
-- Kotlin
-- Pigeon
-- EventChannel
-- Nearby Advertising
-- Nearby Discovery
-- Device Repository
-- Flutter device events
-
-Current UI:
-
-```
-Nearby Devices
-
-🟢 LG TP260
-```
-
-Discovery callback reaches Flutter through EventChannel.
+We are replacing NearbyService with NearbyManager.
 
 ---
 
-# Goal
+# Flutter Architecture
 
-Universal APK.
-
-No internet.
-
-Two modes:
-
-- Parent
-- Brother
-
-Communication:
-
-Google Nearby Connections
-
-- Bluetooth
-- BLE
-- WiFi Direct
-
-Target:
-
-Android 5.0+
-
-Flutter 3.35.x
-
----
-
-# Architecture
-
-## Flutter
+lib/
 
 ```
-main.dart
-
 core/
-
-platform/
+    permissions/
 
 features/
-
     nearby/
-
         controllers/
-
         models/
-
+        screens/
         services/
-
         widgets/
 
-        screens/
+platform/
+    generated/
+    nearby_platform.dart
+
+main.dart
 ```
 
 ---
 
-## Android
+# Android Architecture
 
 ```
-MainActivity
+MainActivity.kt
 
-NearbyPlugin
+NearbyPlugin.kt
 
-NearbyEvents
+generated/
 
-NearbyManager   (future)
+events/
+    NearbyEvents.kt
 
-Currently:
+controllers/
+    AdvertisingController.kt
+    DiscoveryController.kt
+    ConnectionController.kt
+    NearbyConnectionCallback.kt
+    NearbyDiscoveryCallback.kt
+    PayloadController.kt
+
+services/
+    DeviceInfoService.kt
+    NearbyManager.kt
+    NearbyRepository.kt
+    NearbyService.kt (temporary wrapper - scheduled for removal)
+```
+
+---
+
+# Refactor Progress
+
+## Completed
+
+Created
+
+NearbyManager.kt
+
+NearbyManager now owns:
+
+- ConnectionsClient
+- AdvertisingController
+- DiscoveryController
+- ConnectionController
+
+Device name now comes from:
+
+DeviceInfoService.getDeviceName()
+
+instead of a hardcoded string.
+
+NearbyPlugin has been updated to use NearbyManager.
+
+---
+
+## Remaining Refactor
+
+Search project for:
 
 NearbyService
 
-AdvertisingController
+If there are no remaining references:
 
-DiscoveryController
+Delete
 
-ConnectionController
-```
+NearbyService.kt
+
+NearbyManager becomes the single Nearby entry point.
 
 ---
 
@@ -134,11 +170,15 @@ NearbyPlugin
 
 ↓
 
-Android
+NearbyManager
 
 Events
 
-Android
+NearbyManager
+
+↓
+
+NearbyEvents
 
 ↓
 
@@ -146,187 +186,37 @@ EventChannel
 
 ↓
 
-Flutter
+Flutter Stream
 
 ---
 
-# Current Working Features
+# Current Features
 
-Initialize
+Working
 
-Advertising
+- Initialize
+- Advertising
+- Discovery
+- Device found event
+- Device lost event
 
-Discovery
+Not Implemented
 
-EventChannel
-
-Flutter receives:
-
-```
-{
- type: device_found,
- endpointId: "...",
- endpointName: "..."
-}
-```
-
----
-
-# Current TODO
-
-## High Priority
-
-Replace NearbyService + Controllers
-
-↓
-
-NearbyManager
-
-Reason:
-
-Connection management is becoming shared state.
-
-One manager is simpler.
+- Connect button
+- requestConnection()
+- acceptConnection()
+- Payloads
+- GPS
+- Maps
+- Background service
 
 ---
 
-# Roadmap
-
-## Milestone 1
-
-Discovery ✅
-
-## Milestone 2
-
-Connection
-
-requestConnection()
-
-acceptConnection()
-
-disconnect()
-
-## Milestone 3
-
-Payloads
-
-Send text
-
-Send JSON
-
-## Milestone 4
-
-GPS
-
-Geolocator
-
-## Milestone 5
-
-Google Maps
-
-Parent tracks Brother
-
-## Milestone 6
-
-Background Service
-
-Auto reconnect
-
-Foreground notification
-
----
-
-# Coding Rules
-
-Never edit generated Pigeon files.
-
-Always regenerate.
-
-One feature at a time.
-
-Compile after every change.
-
-flutter analyze should stay clean.
-
-No business logic in MainActivity.
-
-Flutter never imports Android code.
-
-Android callbacks never update UI directly.
-
-Use EventChannel for events.
-
-Use Pigeon for commands.
-
----
-
-# Future Refactor
-
-Replace
-
-AdvertisingController
-
-DiscoveryController
-
-ConnectionController
-
-NearbyService
-
-with
-
-NearbyManager
-
-This becomes the single owner of:
-
-Advertising
-
-Discovery
-
-Connections
-
-Payloads
-
-Repository
-
-Callbacks
-
----
-
-# Git Workflow
-
-After every milestone:
-
-```
-flutter analyze
-
-flutter test
-
-git add .
-
-git commit
-```
-
-Recommended tags:
-
-```
-v0.1-discovery
-
-v0.2-connect
-
-v0.3-payload
-
-v0.4-gps
-
-v1.0-release
-```
-
----
-
-# Next Immediate Task
+# Immediate Next Task
 
 Implement connection handshake.
 
-Current flow:
+Target flow:
 
 Advertising
 
@@ -336,7 +226,7 @@ Discovery
 
 ↓
 
-Device appears in Flutter
+Device appears
 
 ↓
 
@@ -344,7 +234,13 @@ Connect button
 
 ↓
 
-requestConnection()
+requestConnection(endpointId)
+
+↓
+
+Phone A
+
+onConnectionInitiated()
 
 ↓
 
@@ -352,8 +248,116 @@ acceptConnection()
 
 ↓
 
-Connected
+Connected Event
 
 ↓
 
-Send payload
+Send "Hello"
+
+---
+
+# Coding Rules
+
+Never modify generated Pigeon files.
+
+Always regenerate after editing pigeons/.
+
+Compile after every change.
+
+Run
+
+flutter analyze
+
+before flutter run.
+
+One feature at a time.
+
+Keep Flutter UI separate from Nearby logic.
+
+Use EventChannel for asynchronous events.
+
+Use Pigeon for command calls.
+
+Do not hardcode device names.
+
+Use
+
+DeviceInfoService.getDeviceName()
+
+---
+
+# Git Workflow
+
+Branches
+
+main
+
+refactor/nearby-manager
+
+Commit after every successful compile.
+
+Suggested tags
+
+v0.1-discovery
+
+v0.2-connection
+
+v0.3-payloads
+
+v0.4-gps
+
+v1.0-release
+
+---
+
+# Long-Term Goal
+
+Offline parent/brother tracking.
+
+Communication:
+
+Google Nearby Connections
+
+Mediums:
+
+- Bluetooth Classic
+- Bluetooth LE
+- Wi-Fi Direct
+
+Target:
+
+Android 5.0+
+
+No internet required.
+
+Universal APK.
+
+---
+
+# Important Notes
+
+Discovery has been fully proven.
+
+Do not redesign architecture again.
+
+Finish remaining modules using the current structure:
+
+NearbyPlugin
+
+↓
+
+NearbyManager
+
+↓
+
+Controllers
+
+↓
+
+NearbyEvents
+
+↓
+
+Flutter
+
+Future work should focus on functionality, not further refactoring.

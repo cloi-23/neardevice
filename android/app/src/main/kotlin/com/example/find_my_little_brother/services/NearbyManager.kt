@@ -1,7 +1,6 @@
 package com.example.find_my_little_brother.services
 
 import android.content.Context
-import android.util.Log
 import com.example.find_my_little_brother.controllers.AdvertisingController
 import com.example.find_my_little_brother.controllers.ConnectionController
 import com.example.find_my_little_brother.controllers.DiscoveryController
@@ -10,17 +9,13 @@ import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback
 import com.google.android.gms.nearby.connection.ConnectionsClient
 import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
 
-class NearbyService(
+class NearbyManager(
     context: Context
 ) {
 
     companion object {
-
-        private const val TAG = "NearbyService"
-
         const val SERVICE_ID =
             "com.example.find_my_little_brother"
-
     }
 
     private val client: ConnectionsClient =
@@ -39,34 +34,20 @@ class NearbyService(
         )
 
     private val connectionController =
-        ConnectionController(
-            client
-        )
+        ConnectionController(client)
 
     fun initialize(): String {
-
-        Log.d(TAG, "Nearby initialized")
-
         return "Nearby Ready"
-
     }
 
     fun startAdvertising(
-        deviceName: String,
         callback: ConnectionLifecycleCallback
     ): Boolean {
 
-        val name =
-            if (deviceName.isBlank())
-                DeviceInfoService.getDeviceName()
-            else
-                deviceName
-
         return advertisingController.startAdvertising(
-            name,
+            DeviceInfoService.getDeviceName(),
             callback
         )
-
     }
 
     fun stopAdvertising(): Boolean {
@@ -74,7 +55,6 @@ class NearbyService(
         advertisingController.stopAdvertising()
 
         return true
-
     }
 
     fun startDiscovery(
@@ -84,7 +64,6 @@ class NearbyService(
         return discoveryController.startDiscovery(
             callback
         )
-
     }
 
     fun stopDiscovery(): Boolean {
@@ -92,7 +71,6 @@ class NearbyService(
         discoveryController.stopDiscovery()
 
         return true
-
     }
 
     fun requestConnection(
@@ -105,7 +83,6 @@ class NearbyService(
             endpointId,
             callback
         )
-
     }
 
     fun disconnect(
@@ -115,7 +92,5 @@ class NearbyService(
         return connectionController.disconnect(
             endpointId
         )
-
     }
-
 }

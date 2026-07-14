@@ -4,13 +4,13 @@ import android.content.Context
 import com.example.find_my_little_brother.controllers.NearbyConnectionCallback
 import com.example.find_my_little_brother.controllers.NearbyDiscoveryCallback
 import com.example.find_my_little_brother.generated.NearbyBridge
-import com.example.find_my_little_brother.services.NearbyService
+import com.example.find_my_little_brother.services.NearbyManager
 
 class NearbyPlugin(
     context: Context
 ) : NearbyBridge {
 
-    private val nearbyService = NearbyService(context)
+    private val nearbyManager = NearbyManager(context)
 
     private val connectionCallback =
         NearbyConnectionCallback()
@@ -19,34 +19,33 @@ class NearbyPlugin(
         NearbyDiscoveryCallback()
 
     override fun initialize(): String {
-        return nearbyService.initialize()
+        return nearbyManager.initialize()
     }
 
     override fun startAdvertising(
         deviceName: String
     ): Boolean {
 
-        return nearbyService.startAdvertising(
-            deviceName,
+        return nearbyManager.startAdvertising(
             connectionCallback
         )
 
     }
 
     override fun stopAdvertising(): Boolean {
-        return nearbyService.stopAdvertising()
+        return nearbyManager.stopAdvertising()
     }
 
     override fun startDiscovery(): Boolean {
 
-        return nearbyService.startDiscovery(
+        return nearbyManager.startDiscovery(
             discoveryCallback
         )
 
     }
 
     override fun stopDiscovery(): Boolean {
-        return nearbyService.stopDiscovery()
+        return nearbyManager.stopDiscovery()
     }
 
     override fun disconnect(): Boolean {
