@@ -1,0 +1,77 @@
+# -----------------------------
+# Flutter
+# -----------------------------
+.dart_tool/
+.packages
+.pub/
+.pub-cache/
+build/
+
+# Flutter generated
+.flutter-plugins
+.flutter-plugins-dependencies
+.flutter-plugins-dependencies.lock
+
+# Generated
+**/generated_plugin_registrant.*
+**/GeneratedPluginRegistrant.*
+
+# -----------------------------
+# Android
+# -----------------------------
+android/.gradle/
+android/build/
+android/local.properties
+android/key.properties
+android/captures/
+
+# Signing
+*.jks
+*.keystore
+
+# -----------------------------
+# VS Code
+# -----------------------------
+.vscode/settings.json
+.vscode/launch.json
+
+# Keep recommended extensions
+!.vscode/extensions.json
+
+# -----------------------------
+# IntelliJ / Android Studio
+# -----------------------------
+.idea/
+*.iml
+
+# -----------------------------
+# macOS
+# -----------------------------
+.DS_Store
+
+# -----------------------------
+# Windows
+# -----------------------------
+Thumbs.db
+Desktop.ini
+
+# -----------------------------
+# Logs
+# -----------------------------
+*.log
+
+# -----------------------------
+# Temporary
+# -----------------------------
+*.tmp
+*.bak
+
+# -----------------------------
+# Coverage
+# -----------------------------
+coverage/
+
+# -----------------------------
+# Dart Docs
+# -----------------------------
+doc/api/
