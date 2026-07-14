@@ -2,129 +2,63 @@
 
 # Find My Little Brother
 
-Offline parent/child tracking application built with Flutter + Kotlin using the **official Google Nearby Connections API**.
+Offline child tracking application using the **official Google Nearby Connections API**.
 
 ---
 
-# Goal
+# Current Milestone
 
-A universal APK that can run in either mode:
+## Milestone 1
 
-- Parent
-- Brother
-
-No Internet required.
-
-Communication uses Google Nearby Connections over:
-
-- Bluetooth
-- BLE
-- Wi-Fi Direct (handled automatically by Nearby Connections)
-
-Target Android:
-
-- Android 5.0 (API 21)
-- Latest Android
-
-Flutter version:
-
-- Flutter 3.35.x
-
----
-
-# Current Status
-
-## ✅ Module 1 Complete
-
-Architecture completed.
+Discovery Complete ✅
 
 Working:
 
 - Flutter
 - Kotlin
-- Pigeon bridge
-- Google Nearby dependency
-- initialize()
+- Pigeon
+- EventChannel
+- Nearby Advertising
+- Nearby Discovery
+- Device Repository
+- Flutter device events
 
-App launches and displays:
-
-```
-Nearby Ready
-```
-
-Bridge:
+Current UI:
 
 ```
-Flutter
+Nearby Devices
 
-↓
-
-NearbyPlatform
-
-↓
-
-Pigeon
-
-↓
-
-MainActivity
-
-↓
-
-NearbyPlugin
-
-↓
-
-NearbyService
-
-↓
-
-Google Nearby
+🟢 LG TP260
 ```
+
+Discovery callback reaches Flutter through EventChannel.
 
 ---
 
-## ✅ Module 2 Partial
+# Goal
 
-Advertising implemented.
+Universal APK.
 
-Working:
+No internet.
 
-```
-Start Advertising
+Two modes:
 
-↓
+- Parent
+- Brother
 
-AdvertisingController
+Communication:
 
-↓
+Google Nearby Connections
 
-Google Nearby
+- Bluetooth
+- BLE
+- WiFi Direct
 
-↓
+Target:
 
-Advertising Started
-```
+Android 5.0+
 
----
-
-## 🚧 Module 3 In Progress
-
-Discovery starts.
-
-Current state:
-
-```
-Discovery Started
-```
-
-Phones do NOT discover each other yet.
-
-Likely missing:
-
-- Runtime permissions
-- Location Services verification
-- Endpoint callback verification
+Flutter 3.35.x
 
 ---
 
@@ -133,40 +67,25 @@ Likely missing:
 ## Flutter
 
 ```
-lib/
-
-app/
+main.dart
 
 core/
 
-features/
-
 platform/
 
-main.dart
-```
+features/
 
-Platform layer:
+    nearby/
 
-```
-lib/platform/
+        controllers/
 
-generated/
-    nearby_bridge.g.dart
+        models/
 
-nearby_platform.dart
-```
+        services/
 
-DO NOT edit:
+        widgets/
 
-```
-generated/
-```
-
-Only edit:
-
-```
-nearby_platform.dart
+        screens/
 ```
 
 ---
@@ -174,76 +93,30 @@ nearby_platform.dart
 ## Android
 
 ```
-android/app/src/main/kotlin/com/example/find_my_little_brother/
+MainActivity
 
-MainActivity.kt
+NearbyPlugin
 
-plugin/
-    NearbyPlugin.kt
+NearbyEvents
 
-services/
-    NearbyService.kt
+NearbyManager   (future)
 
-controllers/
+Currently:
 
-    AdvertisingController.kt
+NearbyService
 
-    DiscoveryController.kt
+AdvertisingController
 
-    NearbyConnectionCallback.kt
+DiscoveryController
 
-    NearbyDiscoveryCallback.kt
-
-    ConnectionController.kt
-
-    PayloadController.kt
+ConnectionController
 ```
 
 ---
 
-# Design Rules
-
-MainActivity
-
-Only registers Pigeon.
-
-No business logic.
-
-NearbyPlugin
-
-Only delegates.
-
-No Google Nearby logic.
-
-NearbyService
-
-Business layer.
-
-Owns controllers.
-
-Controllers
-
-One responsibility each.
-
-AdvertisingController
-
-Advertising only.
-
-DiscoveryController
-
-Discovery only.
-
-ConnectionController
-
-Connections only.
-
-PayloadController
-
-Payload only.
-
----
-
 # Communication
+
+Commands
 
 Flutter
 
@@ -261,31 +134,11 @@ NearbyPlugin
 
 ↓
 
-NearbyService
-
-↓
-
-Controller
-
-↓
-
-Google Nearby Connections
-
----
-
-# Future Event Flow
-
-Commands
-
-Flutter
-
-↓
-
-Pigeon
+Android
 
 Events
 
-Google Nearby
+Android
 
 ↓
 
@@ -295,154 +148,212 @@ EventChannel
 
 Flutter
 
-Discovery should eventually use EventChannel.
-
-NOT Pigeon.
-
 ---
 
-# Coding Rules
+# Current Working Features
 
-- One file at a time.
-- Compile after every file.
-- flutter analyze must stay clean.
-- Never edit generated Pigeon files.
-- Business logic never goes into MainActivity.
-- Controllers never talk directly to Flutter.
-- Flutter never imports Android code.
+Initialize
 
----
+Advertising
 
-# Remaining Roadmap
+Discovery
 
-## Module 3
+EventChannel
 
-Finish Discovery.
-
-Need:
-
-- Runtime permissions
-- Endpoint callbacks
-- Device found event
-
----
-
-## Module 4
-
-Connection.
-
-Implement:
+Flutter receives:
 
 ```
-requestConnection()
-
-acceptConnection()
-
-rejectConnection()
-
-disconnect()
-```
-
----
-
-## Module 5
-
-Payloads.
-
-JSON packets.
-
-Example:
-
-```json
 {
-  "type":"location",
-  "lat":14.5995,
-  "lng":120.9842
+ type: device_found,
+ endpointId: "...",
+ endpointName: "..."
 }
 ```
 
 ---
 
-## Module 6
+# Current TODO
 
-GPS.
+## High Priority
 
-Using:
+Replace NearbyService + Controllers
 
-geolocator
+↓
 
----
+NearbyManager
 
-## Module 7
+Reason:
 
-Google Maps.
+Connection management is becoming shared state.
 
-Parent sees Brother location.
-
----
-
-## Module 8
-
-Background Service.
-
-Auto reconnect.
-
-Foreground notification.
+One manager is simpler.
 
 ---
 
-## Module 9
+# Roadmap
 
-Release APK.
+## Milestone 1
 
-Single universal APK.
+Discovery ✅
 
-Mode selected on startup.
+## Milestone 2
+
+Connection
+
+requestConnection()
+
+acceptConnection()
+
+disconnect()
+
+## Milestone 3
+
+Payloads
+
+Send text
+
+Send JSON
+
+## Milestone 4
+
+GPS
+
+Geolocator
+
+## Milestone 5
+
+Google Maps
+
+Parent tracks Brother
+
+## Milestone 6
+
+Background Service
+
+Auto reconnect
+
+Foreground notification
 
 ---
 
-# Current Problem
+# Coding Rules
 
-Advertising works.
+Never edit generated Pigeon files.
 
-Discovery starts.
+Always regenerate.
 
-Phones do not discover each other.
+One feature at a time.
 
-Need to verify:
+Compile after every change.
 
-- Runtime permissions
-- Location Services enabled
-- Same SERVICE_ID
-- Same Strategy (P2P_STAR)
-- EndpointDiscoveryCallback firing
+flutter analyze should stay clean.
 
----
+No business logic in MainActivity.
 
-# Current Dependencies
+Flutter never imports Android code.
 
-Flutter
+Android callbacks never update UI directly.
 
-permission_handler
+Use EventChannel for events.
 
-flutter_riverpod (planned)
-
-Pigeon
-
-Official Google Nearby Connections API
-
-NO nearby_connections Flutter plugin.
+Use Pigeon for commands.
 
 ---
 
-# Philosophy
+# Future Refactor
 
-Build vertical slices.
+Replace
 
-Every module must compile.
+AdvertisingController
 
-Every module must be testable on two physical Android phones.
+DiscoveryController
 
-Never leave broken code in the project.
+ConnectionController
 
-Architecture is prioritized over quick hacks.
+NearbyService
+
+with
+
+NearbyManager
+
+This becomes the single owner of:
+
+Advertising
+
+Discovery
+
+Connections
+
+Payloads
+
+Repository
+
+Callbacks
+
+---
+
+# Git Workflow
+
+After every milestone:
+
+```
+flutter analyze
+
+flutter test
+
+git add .
+
+git commit
+```
+
+Recommended tags:
+
+```
+v0.1-discovery
+
+v0.2-connect
+
+v0.3-payload
+
+v0.4-gps
+
+v1.0-release
+```
+
+---
+
+# Next Immediate Task
+
+Implement connection handshake.
+
+Current flow:
+
+Advertising
+
+↓
+
+Discovery
+
+↓
+
+Device appears in Flutter
+
+↓
+
+Connect button
+
+↓
+
+requestConnection()
+
+↓
+
+acceptConnection()
+
+↓
+
+Connected
+
+↓
+
+Send payload
