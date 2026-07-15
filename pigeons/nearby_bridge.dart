@@ -22,10 +22,17 @@ abstract class NearbyBridge {
 
   bool stopDiscovery();
 
-  bool disconnect();
+  bool requestConnection(String endpointId);
+
+  bool disconnect(String endpointId);
 
   bool sendMessage(
     String endpointId,
     String message,
+  );
+
+  bool sendJson(
+    String endpointId,
+    String json,
   );
 }

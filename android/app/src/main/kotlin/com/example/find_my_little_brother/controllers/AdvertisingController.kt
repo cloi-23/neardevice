@@ -15,10 +15,19 @@ class AdvertisingController(
         private const val TAG = "AdvertisingController"
     }
 
+    private var isAdvertising = false
+
     fun startAdvertising(
         deviceName: String,
         callback: ConnectionLifecycleCallback
     ): Boolean {
+
+        if (isAdvertising) {
+            Log.d(TAG, "Advertising is already active")
+            return true
+        }
+
+        isAdvertising = true
 
         client.startAdvertising(
             deviceName,
@@ -33,6 +42,8 @@ class AdvertisingController(
 
         }.addOnFailureListener {
 
+            isAdvertising = false
+
             Log.e(TAG, "Advertising failed", it)
 
         }
@@ -42,6 +53,7 @@ class AdvertisingController(
 
     fun stopAdvertising() {
         client.stopAdvertising()
+        isAdvertising = false
         Log.d(TAG, "Advertising stopped")
     }
 }

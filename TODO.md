@@ -1,15 +1,19 @@
 # TODO
 
 ## Current
-- [ ] Finish NearbyManager refactor
-- [ ] Remove NearbyService
-- [ ] Implement requestConnection()
-- [ ] Accept incoming connections
-- [ ] Connect button in Flutter
+- [x] Finish NearbyManager refactor
+- [x] Remove NearbyService
+- [x] Implement requestConnection()
+- [x] Accept incoming connections
+- [x] Connect button in Flutter
+- [x] Regenerate Pigeon bridge and run `flutter analyze`
+- [x] Test the connection handshake on two devices
+- [x] Send text payload
+- [x] Build the debug APK and test text payloads on two devices
+- [x] Send JSON payload
+- [ ] Test JSON payloads on two devices
 
 ## Next
-- [ ] Send text payload
-- [ ] Send JSON payload
 - [ ] GPS sharing
 - [ ] Google Maps
 - [ ] Background service

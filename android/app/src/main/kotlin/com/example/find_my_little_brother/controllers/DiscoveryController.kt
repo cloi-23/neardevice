@@ -15,9 +15,18 @@ class DiscoveryController(
         private const val TAG = "DiscoveryController"
     }
 
+    private var isDiscovering = false
+
     fun startDiscovery(
         callback: EndpointDiscoveryCallback
     ): Boolean {
+
+        if (isDiscovering) {
+            Log.d(TAG, "Discovery is already active")
+            return true
+        }
+
+        isDiscovering = true
 
         client.startDiscovery(
             serviceId,
@@ -33,6 +42,8 @@ class DiscoveryController(
             }
             .addOnFailureListener {
 
+                isDiscovering = false
+
                 Log.e(TAG, "Discovery failed", it)
 
             }
@@ -43,6 +54,7 @@ class DiscoveryController(
     fun stopDiscovery() {
 
         client.stopDiscovery()
+        isDiscovering = false
 
         Log.d(TAG, "Discovery stopped")
 

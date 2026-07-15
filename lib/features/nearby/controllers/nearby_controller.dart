@@ -48,7 +48,16 @@ class NearbyController extends ChangeNotifier {
       case "device_lost":
 
         final endpointId =
-            event["endpointId"];
+            event['endpointId'] as String;
+
+        final isConnected = _devices.any(
+          (device) =>
+              device.endpointId == endpointId && device.connected,
+        );
+
+        if (isConnected) {
+          break;
+        }
 
         _devices.removeWhere(
           (d) => d.endpointId == endpointId,
@@ -57,7 +66,55 @@ class NearbyController extends ChangeNotifier {
         notifyListeners();
 
         break;
+
+      case "connected":
+        _updateDevice(
+          event['endpointId'] as String,
+          connected: true,
+        );
+        break;
+
+      case "disconnected":
+        _updateDevice(
+          event['endpointId'] as String,
+          connected: false,
+        );
+        break;
+
+      case "text_received":
+        _updateDevice(
+          event['endpointId'] as String,
+          lastMessage: event['message'] as String,
+        );
+        break;
+
+      case "json_received":
+        _updateDevice(
+          event['endpointId'] as String,
+          lastJson: event['json'] as String,
+        );
+        break;
     }
+  }
+
+  void _updateDevice(
+    String endpointId, {
+    bool? connected,
+    String? lastMessage,
+    String? lastJson,
+  }) {
+    final index = _devices.indexWhere(
+      (device) => device.endpointId == endpointId,
+    );
+
+    if (index == -1) return;
+
+    _devices[index] = _devices[index].copyWith(
+      connected: connected,
+      lastMessage: lastMessage,
+      lastJson: lastJson,
+    );
+    notifyListeners();
   }
 
   @override

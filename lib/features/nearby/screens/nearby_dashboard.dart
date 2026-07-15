@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/permissions/permission_service.dart';
 import '../../../platform/nearby_platform.dart';
 import '../controllers/nearby_controller.dart';
+import '../models/nearby_device.dart';
 import '../widgets/nearby_device_tile.dart';
 
 class NearbyDashboard extends StatefulWidget {
@@ -147,6 +148,8 @@ Widget build(BuildContext context) {
                   itemBuilder: (_, index) {
                     return NearbyDeviceTile(
                       device: controller.devices[index],
+                      onConnect: _connectToDevice,
+                      onConnectedAction: _handleConnectedAction,
                     );
                   },
                 ),
@@ -155,4 +158,82 @@ Widget build(BuildContext context) {
     ),
   );
 }
+
+  Future<void> _connectToDevice(NearbyDevice device) async {
+    final ok = await NearbyPlatform.requestConnection(device.endpointId);
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ok
+              ? 'Connection request sent to ${device.endpointName}'
+              : 'Could not request a connection',
+        ),
+      ),
+    );
+  }
+
+  Future<void> _sendHello(NearbyDevice device) async {
+    final ok = await NearbyPlatform.sendMessage(
+      device.endpointId,
+      'Hello',
+    );
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ok ? 'Hello sent to ${device.endpointName}' : 'Could not send Hello',
+        ),
+      ),
+    );
+  }
+
+  Future<void> _sendJson(NearbyDevice device) async {
+    const json = '{"type":"hello","message":"Hello"}';
+    final ok = await NearbyPlatform.sendJson(device.endpointId, json);
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ok ? 'JSON sent to ${device.endpointName}' : 'Could not send JSON',
+        ),
+      ),
+    );
+  }
+
+  Future<void> _disconnect(NearbyDevice device) async {
+    final ok = await NearbyPlatform.disconnect(device.endpointId);
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ok
+              ? 'Disconnected from ${device.endpointName}'
+              : 'Could not disconnect from ${device.endpointName}',
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleConnectedAction(
+    NearbyDevice device,
+    NearbyDeviceAction action,
+  ) {
+    switch (action) {
+      case NearbyDeviceAction.sendHello:
+        return _sendHello(device);
+      case NearbyDeviceAction.sendJson:
+        return _sendJson(device);
+      case NearbyDeviceAction.disconnect:
+        return _disconnect(device);
+    }
+  }
 }

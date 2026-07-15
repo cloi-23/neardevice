@@ -61,8 +61,10 @@ interface NearbyBridge {
   fun stopAdvertising(): Boolean
   fun startDiscovery(): Boolean
   fun stopDiscovery(): Boolean
-  fun disconnect(): Boolean
+  fun requestConnection(endpointId: String): Boolean
+  fun disconnect(endpointId: String): Boolean
   fun sendMessage(endpointId: String, message: String): Boolean
+  fun sendJson(endpointId: String, json: String): Boolean
 
   companion object {
     /** The codec used by NearbyBridge. */
@@ -151,11 +153,30 @@ interface NearbyBridge {
         }
       }
       run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.find_my_little_brother.NearbyBridge.requestConnection$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val endpointIdArg = args[0] as String
+            val wrapped: List<Any?> = try {
+              listOf(api.requestConnection(endpointIdArg))
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
         val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.find_my_little_brother.NearbyBridge.disconnect$separatedMessageChannelSuffix", codec)
         if (api != null) {
-          channel.setMessageHandler { _, reply ->
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val endpointIdArg = args[0] as String
             val wrapped: List<Any?> = try {
-              listOf(api.disconnect())
+              listOf(api.disconnect(endpointIdArg))
             } catch (exception: Throwable) {
               wrapError(exception)
             }
@@ -174,6 +195,24 @@ interface NearbyBridge {
             val messageArg = args[1] as String
             val wrapped: List<Any?> = try {
               listOf(api.sendMessage(endpointIdArg, messageArg))
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.find_my_little_brother.NearbyBridge.sendJson$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val endpointIdArg = args[0] as String
+            val jsonArg = args[1] as String
+            val wrapped: List<Any?> = try {
+              listOf(api.sendJson(endpointIdArg, jsonArg))
             } catch (exception: Throwable) {
               wrapError(exception)
             }

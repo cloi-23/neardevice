@@ -25,8 +25,12 @@ class NearbyPlatform {
     return _bridge.stopDiscovery();
   }
 
-  static Future<bool> disconnect() {
-    return _bridge.disconnect();
+  static Future<bool> requestConnection(String endpointId) {
+    return _bridge.requestConnection(endpointId);
+  }
+
+  static Future<bool> disconnect(String endpointId) {
+    return _bridge.disconnect(endpointId);
   }
 
   static Future<bool> sendMessage(
@@ -36,6 +40,16 @@ class NearbyPlatform {
     return _bridge.sendMessage(
       endpointId,
       message,
+    );
+  }
+
+  static Future<bool> sendJson(
+    String endpointId,
+    String json,
+  ) {
+    return _bridge.sendJson(
+      endpointId,
+      json,
     );
   }
 }

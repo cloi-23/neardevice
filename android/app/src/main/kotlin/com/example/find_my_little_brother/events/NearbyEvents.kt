@@ -32,6 +32,36 @@ object NearbyEvents {
 
     }
 
+    fun textReceived(
+        endpointId: String,
+        message: String
+    ) {
+
+        sink?.success(
+            mapOf(
+                "type" to "text_received",
+                "endpointId" to endpointId,
+                "message" to message
+            )
+        )
+
+    }
+
+    fun jsonReceived(
+        endpointId: String,
+        json: String
+    ) {
+
+        sink?.success(
+            mapOf(
+                "type" to "json_received",
+                "endpointId" to endpointId,
+                "json" to json
+            )
+        )
+
+    }
+
     fun deviceFound(
         endpointId: String,
         endpointName: String

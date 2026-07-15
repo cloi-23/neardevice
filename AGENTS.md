@@ -47,11 +47,10 @@ Nearby device appears in list
 
 # Current Milestone
 
-Refactoring Android architecture before implementing connection.
+Connection handshake source and Pigeon bridge are complete. `flutter analyze`
+passes; Android build and two-device handshake testing remain.
 
-Discovery is working.
-
-We are replacing NearbyService with NearbyManager.
+Discovery remains working.
 
 ---
 
@@ -104,7 +103,6 @@ services/
     DeviceInfoService.kt
     NearbyManager.kt
     NearbyRepository.kt
-    NearbyService.kt (temporary wrapper - scheduled for removal)
 ```
 
 ---
@@ -123,6 +121,8 @@ NearbyManager now owns:
 - AdvertisingController
 - DiscoveryController
 - ConnectionController
+- PayloadController
+- NearbyConnectionCallback
 
 Device name now comes from:
 
@@ -130,23 +130,8 @@ DeviceInfoService.getDeviceName()
 
 instead of a hardcoded string.
 
-NearbyPlugin has been updated to use NearbyManager.
-
----
-
-## Remaining Refactor
-
-Search project for:
-
-NearbyService
-
-If there are no remaining references:
-
-Delete
-
-NearbyService.kt
-
-NearbyManager becomes the single Nearby entry point.
+NearbyPlugin has been updated to use NearbyManager. NearbyService has been
+removed; NearbyManager is the single Nearby entry point.
 
 ---
 
@@ -199,13 +184,24 @@ Working
 - Discovery
 - Device found event
 - Device lost event
+- Connect button sends `requestConnection(endpointId)` through Pigeon
+- Incoming connection requests are accepted automatically
+- Connected and disconnected events are sent through the EventChannel
+- A successful connection automatically sends a UTF-8 `Hello` text payload
+- Connected devices can send `Hello` through the Flutter UI and Pigeon
+- Received text payloads are published through the EventChannel and displayed
+  for the nearby device
+- Connected devices can send JSON object or array payloads through the Flutter
+  UI and Pigeon
+- Received JSON object or array payloads are published as JSON events and
+  displayed for the nearby device; plain text remains a text event
+- Connected-device actions include Send Hello, Send JSON, and Disconnect;
+  disconnect before starting a new connection flow
+- Repeated Start Advertising and Start Discovery commands are idempotent, and
+  transient discovery loss does not reset a connected device in Flutter
 
 Not Implemented
 
-- Connect button
-- requestConnection()
-- acceptConnection()
-- Payloads
 - GPS
 - Maps
 - Background service
@@ -214,7 +210,7 @@ Not Implemented
 
 # Immediate Next Task
 
-Implement connection handshake.
+Test JSON payload delivery on two Android devices.
 
 Target flow:
 
@@ -252,7 +248,7 @@ Connected Event
 
 ↓
 
-Send "Hello"
+Send and receive "Hello"
 
 ---
 

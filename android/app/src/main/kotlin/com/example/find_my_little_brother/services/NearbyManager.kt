@@ -4,8 +4,9 @@ import android.content.Context
 import com.example.find_my_little_brother.controllers.AdvertisingController
 import com.example.find_my_little_brother.controllers.ConnectionController
 import com.example.find_my_little_brother.controllers.DiscoveryController
+import com.example.find_my_little_brother.controllers.NearbyConnectionCallback
+import com.example.find_my_little_brother.controllers.PayloadController
 import com.google.android.gms.nearby.Nearby
-import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback
 import com.google.android.gms.nearby.connection.ConnectionsClient
 import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
 
@@ -36,17 +37,22 @@ class NearbyManager(
     private val connectionController =
         ConnectionController(client)
 
+    private val payloadController = PayloadController(client)
+
+    private val connectionCallback = NearbyConnectionCallback(
+        connectionController,
+        payloadController
+    )
+
     fun initialize(): String {
         return "Nearby Ready"
     }
 
-    fun startAdvertising(
-        callback: ConnectionLifecycleCallback
-    ): Boolean {
+    fun startAdvertising(): Boolean {
 
         return advertisingController.startAdvertising(
             DeviceInfoService.getDeviceName(),
-            callback
+            connectionCallback
         )
     }
 
@@ -73,15 +79,12 @@ class NearbyManager(
         return true
     }
 
-    fun requestConnection(
-        endpointId: String,
-        callback: ConnectionLifecycleCallback
-    ): Boolean {
+    fun requestConnection(endpointId: String): Boolean {
 
         return connectionController.requestConnection(
             DeviceInfoService.getDeviceName(),
             endpointId,
-            callback
+            connectionCallback
         )
     }
 
@@ -92,5 +95,19 @@ class NearbyManager(
         return connectionController.disconnect(
             endpointId
         )
+    }
+
+    fun sendMessage(
+        endpointId: String,
+        message: String
+    ): Boolean {
+        return payloadController.sendTextPayload(endpointId, message)
+    }
+
+    fun sendJson(
+        endpointId: String,
+        json: String
+    ): Boolean {
+        return payloadController.sendJsonPayload(endpointId, json)
     }
 }
