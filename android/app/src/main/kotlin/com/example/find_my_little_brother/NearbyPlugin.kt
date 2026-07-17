@@ -63,4 +63,5 @@ class NearbyPlugin(
     ): Boolean {
         return nearbyManager.sendJson(endpointId, json)
     }
+
 }

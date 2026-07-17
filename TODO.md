@@ -11,7 +11,7 @@
 - [x] Send text payload
 - [x] Build the debug APK and test text payloads on two devices
 - [x] Send JSON payload
-- [ ] Test JSON payloads on two devices
+- [x] Test JSON payloads on two devices
 
 ## Next
 - [ ] GPS sharing

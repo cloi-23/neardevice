@@ -35,4 +35,5 @@ abstract class NearbyBridge {
     String endpointId,
     String json,
   );
+
 }

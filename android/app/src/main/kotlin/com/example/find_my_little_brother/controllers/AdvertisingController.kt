@@ -34,7 +34,7 @@ class AdvertisingController(
             serviceId,
             callback,
             AdvertisingOptions.Builder()
-                .setStrategy(Strategy.P2P_STAR)
+                .setStrategy(Strategy.P2P_CLUSTER)
                 .build()
         ).addOnSuccessListener {
 

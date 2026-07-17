@@ -110,4 +110,5 @@ class NearbyManager(
     ): Boolean {
         return payloadController.sendJsonPayload(endpointId, json)
     }
+
 }

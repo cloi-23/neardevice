@@ -63,7 +63,7 @@ Widget build(BuildContext context) {
 
                     ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text("Location permission required"),
+                        content: Text("Nearby permissions required"),
                     ),
                     );
 
@@ -105,7 +105,7 @@ Widget build(BuildContext context) {
 
                     ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text("Location permission required"),
+                        content: Text("Nearby permissions required"),
                     ),
                     );
 
