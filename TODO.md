@@ -14,7 +14,9 @@
 - [x] Test JSON payloads on two devices
 
 ## Next
-- [ ] GPS sharing
+- [x] Display current GPS location locally
+- [x] Share GPS location through Nearby
+- [x] Automatically discover, connect, and share foreground locations
 - [ ] Google Maps
 - [ ] Background service
 - [ ] Auto reconnect

@@ -1,5 +1,5 @@
 name: find_my_little_brother
-description: "A new Flutter project."
+description: "Offline nearby device discovery and radar tracking."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   permission_handler: ^12.0.3
   flutter_riverpod: ^2.6.1
+  geolocator: ^14.0.2
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:

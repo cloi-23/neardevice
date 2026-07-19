@@ -1,4 +1,4 @@
-# NearDevice
+# Find Nearby Devices
 
 Offline device discovery and tracking application built with **Flutter** and the **official Google Nearby Connections API**.
 

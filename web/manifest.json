@@ -1,11 +1,11 @@
 {
-    "name": "find_my_little_brother",
-    "short_name": "find_my_little_brother",
+    "name": "Find Nearby Devices",
+    "short_name": "Nearby Devices",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Offline nearby device discovery and radar tracking.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

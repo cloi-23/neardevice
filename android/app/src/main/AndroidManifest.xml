@@ -21,7 +21,7 @@
 
     <uses-permission android:minSdkVersion="32" android:name="android.permission.NEARBY_WIFI_DEVICES"/>
     <application
-        android:label="find_my_little_brother"
+        android:label="Find Nearby Devices"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

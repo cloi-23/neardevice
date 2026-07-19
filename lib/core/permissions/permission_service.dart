@@ -4,8 +4,14 @@ class PermissionService {
   PermissionService._();
 
   static Future<bool> requestNearbyPermissions() async {
-    final location = await Permission.location.request();
+    final permissions = await [
+      Permission.location,
+      Permission.bluetoothScan,
+      Permission.bluetoothAdvertise,
+      Permission.bluetoothConnect,
+      Permission.nearbyWifiDevices,
+    ].request();
 
-    return location.isGranted;
+    return permissions.values.every((status) => status.isGranted);
   }
 }

@@ -5,36 +5,22 @@ import 'features/nearby/screens/nearby_dashboard.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(
-    const FindMyLittleBrotherApp(),
-  );
+  runApp(const FindMyLittleBrotherApp());
 }
 
-class FindMyLittleBrotherApp
-    extends StatelessWidget {
-
-  const FindMyLittleBrotherApp({
-    super.key,
-  });
+class FindMyLittleBrotherApp extends StatelessWidget {
+  const FindMyLittleBrotherApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
-
       debugShowCheckedModeBanner: false,
 
-      title: "Find My Little Brother",
+      title: "Find Nearby Devices",
 
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.blue,
-      ),
+      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
 
       home: const NearbyDashboard(),
-
     );
-
   }
-
 }

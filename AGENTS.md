@@ -1,6 +1,6 @@
 # AGENTS.md
 
-# Find My Little Brother
+# Find Nearby Devices
 
 Offline Android child-tracking application built with Flutter and the official Google Nearby Connections API.
 

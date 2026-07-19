@@ -1,81 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../models/nearby_device.dart';
-
-enum NearbyDeviceAction {
-  sendHello,
-  sendJson,
-  disconnect,
-}
+import 'location_radar.dart';
 
 class NearbyDeviceTile extends StatelessWidget {
-
-  final NearbyDevice device;
-  final Future<void> Function(NearbyDevice device) onConnect;
-  final Future<void> Function(
-    NearbyDevice device,
-    NearbyDeviceAction action,
-  ) onConnectedAction;
-
   const NearbyDeviceTile({
     super.key,
     required this.device,
-    required this.onConnect,
-    required this.onConnectedAction,
+    required this.currentPosition,
   });
+
+  final NearbyDevice device;
+  final Position? currentPosition;
 
   @override
   Widget build(BuildContext context) {
+    final hasRemoteLocation =
+        device.latitude != null && device.longitude != null;
 
     return Card(
-
-      margin: const EdgeInsets.all(8),
-
-      child: ListTile(
-
-        isThreeLine: device.connected,
-
-        leading: const Icon(
-          Icons.phone_android,
-          color: Colors.green,
-        ),
-
-        title: Text(device.endpointName),
-
-        subtitle: Text(
-          device.lastJson != null
-              ? 'JSON: ${device.lastJson}'
-              : device.lastMessage != null
-                  ? 'Message: ${device.lastMessage}'
-                  : device.endpointId,
-        ),
-
-        trailing: device.connected
-            ? PopupMenuButton<NearbyDeviceAction>(
-                onSelected: (action) => onConnectedAction(device, action),
-                itemBuilder: (context) => const [
-                  PopupMenuItem(
-                    value: NearbyDeviceAction.sendHello,
-                    child: Text('Send Hello'),
-                  ),
-                  PopupMenuItem(
-                    value: NearbyDeviceAction.sendJson,
-                    child: Text('Send JSON'),
-                  ),
-                  PopupMenuItem(
-                    value: NearbyDeviceAction.disconnect,
-                    child: Text('Disconnect'),
-                  ),
-                ],
-              )
-            : ElevatedButton(
-                onPressed: () => onConnect(device),
-                child: const Text('Connect'),
-              ),
-
+      margin: const EdgeInsets.all(12),
+      child: Column(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.radar, color: Colors.green),
+            title: Text(device.endpointName),
+            subtitle: Text(
+              hasRemoteLocation
+                  ? 'Location received (+/-${device.locationAccuracy?.round() ?? '?'} m)'
+                  : 'Connected — waiting for location…',
+            ),
+          ),
+          if (currentPosition != null && hasRemoteLocation)
+            LocationRadar(
+              deviceName: device.endpointName,
+              localLatitude: currentPosition!.latitude,
+              localLongitude: currentPosition!.longitude,
+              remoteLatitude: device.latitude!,
+              remoteLongitude: device.longitude!,
+            )
+          else
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 8, 16, 20),
+              child: CircularProgressIndicator(),
+            ),
+        ],
       ),
-
     );
-
   }
 }
