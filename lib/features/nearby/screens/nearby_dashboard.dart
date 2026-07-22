@@ -7,7 +7,6 @@ import 'package:geolocator/geolocator.dart';
 import '../../../core/permissions/permission_service.dart';
 import '../../../platform/nearby_platform.dart';
 import '../../location/services/location_service.dart';
-import '../../settings/screens/settings_screen.dart';
 import '../controllers/nearby_controller.dart';
 import '../models/nearby_device.dart';
 import '../widgets/nearby_device_tile.dart';
@@ -58,17 +57,6 @@ class _NearbyDashboardState extends State<NearbyDashboard> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Find Nearby Devices'),
-        actions: [
-          IconButton(
-            tooltip: 'Settings',
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
-              );
-            },
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -196,6 +184,11 @@ class _NearbyDashboardState extends State<NearbyDashboard> {
 
   void _handleControllerChange() {
     if (!mounted) return;
+
+    final nearbyStatus = controller.nearbyStatus;
+    if (nearbyStatus != null) {
+      _setStatus(nearbyStatus);
+    }
 
     final discoveredEndpointIds = controller.devices
         .map((device) => device.endpointId)

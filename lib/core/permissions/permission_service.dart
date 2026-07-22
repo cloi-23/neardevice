@@ -9,7 +9,6 @@ class PermissionService {
       Permission.bluetoothScan,
       Permission.bluetoothAdvertise,
       Permission.bluetoothConnect,
-      Permission.nearbyWifiDevices,
     ].request();
 
     return permissions.values.every((status) => status.isGranted);

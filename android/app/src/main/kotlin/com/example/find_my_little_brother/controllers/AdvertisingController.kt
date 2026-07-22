@@ -1,6 +1,7 @@
 package com.example.find_my_little_brother.controllers
 
 import android.util.Log
+import com.example.find_my_little_brother.events.NearbyEvents
 import com.google.android.gms.nearby.connection.AdvertisingOptions
 import com.google.android.gms.nearby.connection.ConnectionsClient
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback
@@ -24,10 +25,13 @@ class AdvertisingController(
 
         if (isAdvertising) {
             Log.d(TAG, "Advertising is already active")
+            NearbyEvents.status("Nearby advertising is already active.")
             return true
         }
 
         isAdvertising = true
+        Log.d(TAG, "Starting advertising for service $serviceId")
+        NearbyEvents.status("Starting nearby advertising...")
 
         client.startAdvertising(
             deviceName,
@@ -39,12 +43,16 @@ class AdvertisingController(
         ).addOnSuccessListener {
 
             Log.d(TAG, "Advertising started")
+            NearbyEvents.status("Nearby advertising started.")
 
         }.addOnFailureListener {
 
             isAdvertising = false
 
             Log.e(TAG, "Advertising failed", it)
+            NearbyEvents.status(
+                "Nearby advertising failed: ${it.localizedMessage ?: "unknown error"}"
+            )
 
         }
 
@@ -55,5 +63,6 @@ class AdvertisingController(
         client.stopAdvertising()
         isAdvertising = false
         Log.d(TAG, "Advertising stopped")
+        NearbyEvents.status("Nearby advertising stopped.")
     }
 }

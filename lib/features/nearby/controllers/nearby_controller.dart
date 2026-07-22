@@ -10,8 +10,10 @@ class NearbyController extends ChangeNotifier {
   final List<NearbyDevice> _devices = [];
 
   StreamSubscription? _subscription;
+  String? _nearbyStatus;
 
   List<NearbyDevice> get devices => List.unmodifiable(_devices);
+  String? get nearbyStatus => _nearbyStatus;
 
   void startListening() {
     _subscription ??= NearbyEventService.events().listen(_handleEvent);
@@ -26,6 +28,11 @@ class NearbyController extends ChangeNotifier {
     final type = event["type"];
 
     switch (type) {
+      case 'status':
+        _nearbyStatus = event['message'] as String;
+        notifyListeners();
+        break;
+
       case "device_found":
         final device = NearbyDevice.fromMap(event);
 

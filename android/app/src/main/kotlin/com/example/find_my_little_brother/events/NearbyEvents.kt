@@ -6,6 +6,15 @@ object NearbyEvents {
 
     var sink: EventChannel.EventSink? = null
 
+    fun status(message: String) {
+        sink?.success(
+            mapOf(
+                "type" to "status",
+                "message" to message
+            )
+        )
+    }
+
     fun connected(
         endpointId: String
     ) {
