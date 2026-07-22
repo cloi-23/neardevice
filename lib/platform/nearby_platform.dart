@@ -9,6 +9,14 @@ class NearbyPlatform {
     return _bridge.initialize();
   }
 
+  static Future<String> getDeviceName() {
+    return _bridge.getDeviceName();
+  }
+
+  static Future<String> getDeviceId() {
+    return _bridge.getDeviceId();
+  }
+
   static Future<bool> startAdvertising(String deviceName) {
     return _bridge.startAdvertising(deviceName);
   }

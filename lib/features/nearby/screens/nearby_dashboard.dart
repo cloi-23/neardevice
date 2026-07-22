@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import '../../../core/permissions/permission_service.dart';
 import '../../../platform/nearby_platform.dart';
 import '../../location/services/location_service.dart';
+import '../../location/services/location_database_service.dart';
 import '../controllers/nearby_controller.dart';
 import '../models/nearby_device.dart';
 import '../widgets/nearby_device_tile.dart';
@@ -21,6 +22,8 @@ class NearbyDashboard extends StatefulWidget {
 class _NearbyDashboardState extends State<NearbyDashboard> {
   final NearbyController controller = NearbyController();
   final LocationService _locationService = const LocationService();
+  final LocationDatabaseService _locationDatabaseService =
+      LocationDatabaseService();
   final Set<String> _requestedEndpointIds = {};
   final Set<String> _connectedEndpointIds = {};
 
@@ -29,12 +32,15 @@ class _NearbyDashboardState extends State<NearbyDashboard> {
   Position? _currentPosition;
   String _status = 'Preparing nearby search...';
   bool _isRefreshingLocation = false;
+  String? _deviceId;
+  String? _deviceName;
 
   @override
   void initState() {
     super.initState();
     controller.addListener(_handleControllerChange);
     controller.startListening();
+    unawaited(_loadDeviceDetails());
     unawaited(_startAutomaticNearby());
   }
 
@@ -180,6 +186,41 @@ class _NearbyDashboardState extends State<NearbyDashboard> {
       _currentPosition = position;
     });
     unawaited(_sendLocationToConnectedDevices(position));
+    unawaited(_saveLocationToDatabase(position));
+  }
+
+  Future<void> _loadDeviceDetails() async {
+    try {
+      final details = await Future.wait([
+        NearbyPlatform.getDeviceId(),
+        NearbyPlatform.getDeviceName(),
+      ]);
+      if (!mounted) return;
+      _deviceId = details[0];
+      _deviceName = details[1];
+      final currentPosition = _currentPosition;
+      if (currentPosition != null) {
+        unawaited(_saveLocationToDatabase(currentPosition));
+      }
+    } catch (_) {
+      _setStatus('Could not identify this device for Firebase.');
+    }
+  }
+
+  Future<void> _saveLocationToDatabase(Position position) async {
+    final deviceId = _deviceId;
+    final deviceName = _deviceName;
+    if (deviceId == null || deviceName == null) return;
+
+    try {
+      await _locationDatabaseService.saveLocation(
+        deviceId: deviceId,
+        deviceName: deviceName,
+        position: position,
+      );
+    } catch (_) {
+      // Nearby location sharing continues if Firebase is unavailable.
+    }
   }
 
   void _handleControllerChange() {

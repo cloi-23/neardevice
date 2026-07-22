@@ -1,6 +1,8 @@
 package com.example.find_my_little_brother.services
 
+import android.content.Context
 import android.os.Build
+import android.provider.Settings
 
 object DeviceInfoService {
 
@@ -14,5 +16,12 @@ object DeviceInfoService {
         } else {
             "$manufacturer $model"
         }
+    }
+
+    fun getDeviceId(context: Context): String {
+        return Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
     }
 }

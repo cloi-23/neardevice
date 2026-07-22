@@ -14,6 +14,10 @@ import 'package:pigeon/pigeon.dart';
 abstract class NearbyBridge {
   String initialize();
 
+  String getDeviceName();
+
+  String getDeviceId();
+
   bool startAdvertising(String deviceName);
 
   bool stopAdvertising();

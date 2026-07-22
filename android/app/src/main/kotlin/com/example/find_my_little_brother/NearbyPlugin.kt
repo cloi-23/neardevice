@@ -3,10 +3,11 @@ package com.example.find_my_little_brother.plugin
 import android.content.Context
 import com.example.find_my_little_brother.controllers.NearbyDiscoveryCallback
 import com.example.find_my_little_brother.generated.NearbyBridge
+import com.example.find_my_little_brother.services.DeviceInfoService
 import com.example.find_my_little_brother.services.NearbyManager
 
 class NearbyPlugin(
-    context: Context
+    private val context: Context
 ) : NearbyBridge {
 
     private val nearbyManager = NearbyManager(context)
@@ -16,6 +17,14 @@ class NearbyPlugin(
 
     override fun initialize(): String {
         return nearbyManager.initialize()
+    }
+
+    override fun getDeviceName(): String {
+        return DeviceInfoService.getDeviceName()
+    }
+
+    override fun getDeviceId(): String {
+        return DeviceInfoService.getDeviceId(context)
     }
 
     override fun startAdvertising(

@@ -57,6 +57,8 @@ private open class NearbyBridgePigeonCodec : StandardMessageCodec() {
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface NearbyBridge {
   fun initialize(): String
+  fun getDeviceName(): String
+  fun getDeviceId(): String
   fun startAdvertising(deviceName: String): Boolean
   fun stopAdvertising(): Boolean
   fun startDiscovery(): Boolean
@@ -81,6 +83,36 @@ interface NearbyBridge {
           channel.setMessageHandler { _, reply ->
             val wrapped: List<Any?> = try {
               listOf(api.initialize())
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.find_my_little_brother.NearbyBridge.getDeviceName$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.getDeviceName())
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.find_my_little_brother.NearbyBridge.getDeviceId$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.getDeviceId())
             } catch (exception: Throwable) {
               wrapError(exception)
             }
