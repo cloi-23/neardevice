@@ -14,8 +14,6 @@
 ## Next
 
 - [x] Add an OpenStreetMap view for Firebase-stored locations
-- [ ] Show peer locations received through Nearby when they are not in Firebase
-- [ ] Define and implement reconnection behavior after a device leaves range
 - [ ] Add resilience for Firebase initialization and database failures
 - [ ] Test automatic connection and foreground location sharing on multiple Android versions and two physical devices
 - [ ] Prepare and test a release APK
