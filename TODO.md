@@ -1,22 +1,21 @@
 # TODO
 
-## Current
-- [x] Finish NearbyManager refactor
-- [x] Remove NearbyService
-- [x] Implement requestConnection()
-- [x] Accept incoming connections
-- [x] Connect button in Flutter
-- [x] Regenerate Pigeon bridge and run `flutter analyze`
-- [x] Test the connection handshake on two devices
-- [x] Send text payload
-- [x] Build the debug APK and test text payloads on two devices
-- [x] Send JSON payload
-- [x] Test JSON payloads on two devices
+## Completed
+
+- [x] Finish the `NearbyManager` refactor and remove `NearbyService`
+- [x] Implement and two-device test the Nearby connection handshake
+- [x] Send and receive text and JSON payloads
+- [x] Display the current GPS location locally in the radar interface
+- [x] Share foreground locations through Nearby
+- [x] Automatically advertise, discover, connect, and share foreground locations
+- [x] Request Nearby and location permissions
+- [x] Persist the local device's latest location in Firebase Realtime Database
 
 ## Next
-- [x] Display current GPS location locally
-- [x] Share GPS location through Nearby
-- [x] Automatically discover, connect, and share foreground locations
-- [ ] Google Maps
-- [ ] Background service
-- [ ] Auto reconnect
+
+- [x] Add an OpenStreetMap view for Firebase-stored locations
+- [ ] Show peer locations received through Nearby when they are not in Firebase
+- [ ] Define and implement reconnection behavior after a device leaves range
+- [ ] Add resilience for Firebase initialization and database failures
+- [ ] Test automatic connection and foreground location sharing on multiple Android versions and two physical devices
+- [ ] Prepare and test a release APK

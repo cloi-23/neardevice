@@ -1,359 +1,104 @@
 # AGENTS.md
 
-# Find Nearby Devices
+# Find My Little Brother
 
-Offline Android child-tracking application built with Flutter and the official Google Nearby Connections API.
+Android-focused Flutter app for offline nearby-device tracking. Google Nearby Connections handles local peer-to-peer communication; Firebase Realtime Database stores each device's latest foreground location.
 
----
+## Current status
 
-# Current Status
+Nearby discovery, connection, payload delivery, foreground GPS sharing, permission handling, and Firebase location persistence are implemented.
 
-## Milestone 1 - Discovery ✅
+### Working features
 
-Working:
+- Flutter-to-Kotlin commands through Pigeon
+- Native-to-Flutter events through an EventChannel
+- Nearby advertising and discovery with dynamic device names from `DeviceInfoService.getDeviceName()`
+- Automatic Nearby connection requests and automatic acceptance of incoming requests
+- Connected and disconnected events
+- UTF-8 text and JSON object/array payload delivery
+- Automatic foreground location updates sent as JSON to connected devices
+- Radar UI for connected devices
+- Firebase Realtime Database persistence of the local device's latest location
+- OpenStreetMap view with Firebase-backed device markers
+- Startup requests for location and Bluetooth permissions
 
-- Flutter ↔ Kotlin bridge (Pigeon)
-- EventChannel
-- Google Nearby Connections API
-- Advertising
-- Discovery
-- Device repository
-- Flutter receives nearby devices
-- Automatic Android device name (DeviceInfoService)
+### Remaining work
 
-Current result:
+- Real-device OpenStreetMap testing
+- Background service
+- Reconnection behavior
+- Broader real-device and Android-version testing
+- Release APK preparation
 
-Phone A
+## Architecture
 
-Advertising
+### Flutter
 
-↓
-
-Phone B
-
-Discovery
-
-↓
-
-Flutter UI receives
-
-device_found
-
-↓
-
-Nearby device appears in list
-
----
-
-# Current Milestone
-
-Connection handshake source and Pigeon bridge are complete. `flutter analyze`
-passes; Android build and two-device handshake testing remain.
-
-Discovery remains working.
-
----
-
-# Flutter Architecture
-
+```text
 lib/
-
-```
-core/
-    permissions/
-
-features/
-    nearby/
-        controllers/
-        models/
-        screens/
-        services/
-        widgets/
-
-platform/
+  core/permissions/
+  features/location/services/
+  features/nearby/
+    controllers/
+    models/
+    screens/
+    services/
+    widgets/
+  platform/
     generated/
     nearby_platform.dart
-
-main.dart
+  main.dart
 ```
 
----
+### Android
 
-# Android Architecture
-
-```
+```text
 MainActivity.kt
-
 NearbyPlugin.kt
-
 generated/
-
-events/
-    NearbyEvents.kt
-
+events/NearbyEvents.kt
 controllers/
-    AdvertisingController.kt
-    DiscoveryController.kt
-    ConnectionController.kt
-    NearbyConnectionCallback.kt
-    NearbyDiscoveryCallback.kt
-    PayloadController.kt
-
+  AdvertisingController.kt
+  DiscoveryController.kt
+  ConnectionController.kt
+  NearbyConnectionCallback.kt
+  NearbyDiscoveryCallback.kt
+  PayloadController.kt
 services/
-    DeviceInfoService.kt
-    NearbyManager.kt
-    NearbyRepository.kt
+  DeviceInfoService.kt
+  NearbyManager.kt
+  NearbyRepository.kt
 ```
 
----
+## Communication
 
-# Refactor Progress
+```text
+Commands: Flutter -> NearbyPlatform -> Pigeon -> NearbyPlugin -> NearbyManager
+Events:   NearbyManager -> NearbyEvents -> EventChannel -> Flutter stream
+```
 
-## Completed
+`NearbyManager` is the single Android Nearby entry point. It owns the `ConnectionsClient` and coordinates the advertising, discovery, connection, and payload controllers.
 
-Created
+## Current behavior
 
-NearbyManager.kt
+On launch, the app requests the location and Bluetooth permissions, starts advertising and discovery, obtains foreground location updates, and attempts to connect to discovered devices. When connected, it sends location JSON updates to peers and saves the local device's latest location to Firebase. Firebase failures must not interrupt Nearby sharing.
 
-NearbyManager now owns:
+## Coding rules
 
-- ConnectionsClient
-- AdvertisingController
-- DiscoveryController
-- ConnectionController
-- PayloadController
-- NearbyConnectionCallback
+- Never modify generated Pigeon files; edit `pigeons/` and regenerate instead.
+- Compile after every change, and run `flutter analyze` before `flutter run`.
+- Keep Flutter UI, permission, location, Firebase, and Nearby concerns separated.
+- Use Pigeon for commands and EventChannel for asynchronous native events.
+- Do not hardcode device names; use `DeviceInfoService.getDeviceName()`.
+- Make repeated start commands idempotent and do not let transient discovery loss reset a connected device.
+- Implement one feature at a time; do not redesign the Nearby architecture.
 
-Device name now comes from:
+## Workflow
 
-DeviceInfoService.getDeviceName()
+- Branches: `main`, `refactor/nearby-manager`
+- Commit after every successful compile.
+- Suggested tags: `v0.1-discovery`, `v0.2-connection`, `v0.3-payloads`, `v0.4-gps`, `v1.0-release`
 
-instead of a hardcoded string.
+## Long-term goal
 
-NearbyPlugin has been updated to use NearbyManager. NearbyService has been
-removed; NearbyManager is the single Nearby entry point.
-
----
-
-# Communication
-
-Commands
-
-Flutter
-
-↓
-
-NearbyPlatform
-
-↓
-
-Pigeon
-
-↓
-
-NearbyPlugin
-
-↓
-
-NearbyManager
-
-Events
-
-NearbyManager
-
-↓
-
-NearbyEvents
-
-↓
-
-EventChannel
-
-↓
-
-Flutter Stream
-
----
-
-# Current Features
-
-Working
-
-- Initialize
-- Advertising
-- Discovery
-- Device found event
-- Device lost event
-- Connect button sends `requestConnection(endpointId)` through Pigeon
-- Incoming connection requests are accepted automatically
-- Connected and disconnected events are sent through the EventChannel
-- A successful connection automatically sends a UTF-8 `Hello` text payload
-- Connected devices can send `Hello` through the Flutter UI and Pigeon
-- Received text payloads are published through the EventChannel and displayed
-  for the nearby device
-- Connected devices can send JSON object or array payloads through the Flutter
-  UI and Pigeon
-- Received JSON object or array payloads are published as JSON events and
-  displayed for the nearby device; plain text remains a text event
-- Connected-device actions include Send Hello, Send JSON, and Disconnect;
-  disconnect before starting a new connection flow
-- Repeated Start Advertising and Start Discovery commands are idempotent, and
-  transient discovery loss does not reset a connected device in Flutter
-
-Not Implemented
-
-- GPS
-- Maps
-- Background service
-
----
-
-# Immediate Next Task
-
-Test JSON payload delivery on two Android devices.
-
-Target flow:
-
-Advertising
-
-↓
-
-Discovery
-
-↓
-
-Device appears
-
-↓
-
-Connect button
-
-↓
-
-requestConnection(endpointId)
-
-↓
-
-Phone A
-
-onConnectionInitiated()
-
-↓
-
-acceptConnection()
-
-↓
-
-Connected Event
-
-↓
-
-Send and receive "Hello"
-
----
-
-# Coding Rules
-
-Never modify generated Pigeon files.
-
-Always regenerate after editing pigeons/.
-
-Compile after every change.
-
-Run
-
-flutter analyze
-
-before flutter run.
-
-One feature at a time.
-
-Keep Flutter UI separate from Nearby logic.
-
-Use EventChannel for asynchronous events.
-
-Use Pigeon for command calls.
-
-Do not hardcode device names.
-
-Use
-
-DeviceInfoService.getDeviceName()
-
----
-
-# Git Workflow
-
-Branches
-
-main
-
-refactor/nearby-manager
-
-Commit after every successful compile.
-
-Suggested tags
-
-v0.1-discovery
-
-v0.2-connection
-
-v0.3-payloads
-
-v0.4-gps
-
-v1.0-release
-
----
-
-# Long-Term Goal
-
-Offline parent/brother tracking.
-
-Communication:
-
-Google Nearby Connections
-
-Mediums:
-
-- Bluetooth Classic
-- Bluetooth LE
-- Wi-Fi Direct
-
-Target:
-
-Android 5.0+
-
-No internet required.
-
-Universal APK.
-
----
-
-# Important Notes
-
-Discovery has been fully proven.
-
-Do not redesign architecture again.
-
-Finish remaining modules using the current structure:
-
-NearbyPlugin
-
-↓
-
-NearbyManager
-
-↓
-
-Controllers
-
-↓
-
-NearbyEvents
-
-↓
-
-Flutter
-
-Future work should focus on functionality, not further refactoring.
+Reliable, offline parent/brother tracking on Android 5.0+ using Bluetooth Classic, Bluetooth LE, and Wi-Fi Direct through Google Nearby Connections. The app should work without internet for nearby sharing; Firebase persistence is an optional online enhancement.

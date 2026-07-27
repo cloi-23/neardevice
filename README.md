@@ -1,100 +1,69 @@
-# Find Nearby Devices
+# Find My Little Brother
 
-Offline device discovery and tracking application built with **Flutter** and the **official Google Nearby Connections API**.
+Android-focused Flutter app for offline nearby-device discovery, automatic connection, and location sharing. It uses Google Nearby Connections for peer-to-peer communication and Firebase Realtime Database to persist the local device's latest location.
 
-## Features
+## Current capabilities
 
-- ✅ Nearby Advertising
-- ✅ Nearby Discovery
-- ✅ EventChannel communication
-- ✅ Flutter ↔ Kotlin bridge (Pigeon)
-- 🚧 Device Connection
-- 🚧 Messaging
-- 🚧 GPS Sharing
-- 🚧 Google Maps
+- Advertise and discover nearby Android devices
+- Automatically request and accept Nearby Connections
+- Send and receive UTF-8 text and JSON payloads
+- Automatically share foreground GPS locations with connected devices
+- Display connected devices in a radar-style interface
+- Save the current device's location, name, accuracy, and timestamp to Firebase Realtime Database
+- Request the required location and Bluetooth permissions at startup
 
----
+## Architecture
 
-## Tech Stack
+Commands flow from Flutter through Pigeon to the Android implementation:
 
-- Flutter 3.35.x
-- Dart
+```text
+Flutter UI -> NearbyPlatform -> Pigeon -> NearbyPlugin -> NearbyManager -> controllers
+```
+
+Asynchronous Android events return through an EventChannel:
+
+```text
+NearbyManager -> NearbyEvents -> EventChannel -> NearbyController -> Flutter UI
+```
+
+The native Nearby layer is organized around advertising, discovery, connection, and payload controllers. Flutter location and permission concerns remain in `lib/core` and `lib/features/location`.
+
+## Technology
+
+- Flutter and Dart
 - Kotlin
 - Google Nearby Connections API
-- Pigeon
-- EventChannel
+- Pigeon and EventChannel
+- Geolocator and permission_handler
+- Firebase Core and Firebase Realtime Database
 
----
+## Requirements
 
-## Supported Android Versions
+- Android 5.0+ target
+- Location services enabled and location/Bluetooth permissions granted
+- Firebase configured for the Android app when Firebase location persistence is needed
 
-- Android 5.0+
-- Android 7 tested
-- Android 12+ (planned permission support)
+## Run
 
----
-
-## Project Structure
-
-```
-lib/
-├── core/
-├── features/
-│   └── nearby/
-│       ├── controllers/
-│       ├── models/
-│       ├── screens/
-│       ├── services/
-│       └── widgets/
-├── platform/
-└── main.dart
+```bash
+flutter pub get
+flutter analyze
+flutter run
 ```
 
----
+The map uses OpenStreetMap tiles and needs no API key. It requires internet access to load map tiles.
 
-## Current Status
-
-### Completed
-
-- Flutter project setup
-- Android native bridge
-- Google Nearby integration
-- Advertising
-- Discovery
-- Device events
-
-### In Progress
-
-- Connection handshake
-- Payload messaging
-
-### Planned
-
-- GPS sharing
-- Google Maps
-- Background service
-- Auto reconnect
-
----
-
-## Screenshots
-
-Coming soon.
-
----
+For Nearby testing, run the app on two Android devices, grant permissions on both, and keep both devices in the foreground. Each device advertises, discovers, and attempts to connect automatically.
 
 ## Roadmap
 
-- [x] Advertising
-- [x] Discovery
-- [ ] Connection
-- [ ] Messaging
-- [ ] GPS
-- [ ] Maps
-- [ ] Background Service
-- [ ] Release APK
-
----
+- [x] Nearby advertising and discovery
+- [x] Connection handshake and payload messaging
+- [x] Foreground GPS sharing over Nearby
+- [x] Firebase location persistence
+- [x] OpenStreetMap view for Firebase-stored locations
+- [ ] Background location service
+- [ ] Reliable reconnection and production release
 
 ## License
 

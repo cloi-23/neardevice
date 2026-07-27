@@ -8,6 +8,7 @@ import '../../../core/permissions/permission_service.dart';
 import '../../../platform/nearby_platform.dart';
 import '../../location/services/location_service.dart';
 import '../../location/services/location_database_service.dart';
+import '../../location/screens/location_map_screen.dart';
 import '../controllers/nearby_controller.dart';
 import '../models/nearby_device.dart';
 import '../widgets/nearby_device_tile.dart';
@@ -63,6 +64,19 @@ class _NearbyDashboardState extends State<NearbyDashboard> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Find Nearby Devices'),
+        actions: [
+          IconButton(
+            tooltip: 'View locations on map',
+            icon: const Icon(Icons.map_outlined),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const LocationMapScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
